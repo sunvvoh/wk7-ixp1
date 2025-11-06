@@ -132,10 +132,12 @@
             background-repeat: no-repeat;
             background-position: center;
             cursor: grab;
+            transition: transform 0.2s, filter 0.2s;
         }
 
         .ingredient-option:hover {
-            /* No hover effects */
+            transform: scale(1.1);
+            filter: brightness(1.2);
         }
 
         .ingredient-option:active {
