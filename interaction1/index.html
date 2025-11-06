@@ -456,13 +456,13 @@
             placedIngredient.style.backgroundImage = `url('${ingredientImages[ingredient]}')`;
             placedIngredient.style.bottom = '8%';
 
-            // Position based on phase so ingredients don't overlap
+            // Position based on phase so ingredients overlap within tortilla
             if (currentPhase === 'protein') {
-                placedIngredient.style.left = '40%';
+                placedIngredient.style.left = '47%';
             } else if (currentPhase === 'vegetable') {
                 placedIngredient.style.left = '50%';
             } else if (currentPhase === 'sauce') {
-                placedIngredient.style.left = '60%';
+                placedIngredient.style.left = '53%';
             }
 
             placedIngredient.style.transform = 'translateX(-50%)';
