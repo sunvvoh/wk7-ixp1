@@ -56,7 +56,16 @@
         }
 
         #speech-bubble {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            max-width: 600px;
+            text-align: center;
             display: none;
+            z-index: 10;
+            color: #333;
         }
 
         #cat-sprite {
@@ -338,12 +347,22 @@
         function typeOrderText() {
             const orderText = `I want the ${currentOrder.protein}, ${currentOrder.vegetable}, and ${currentOrder.sauce} taco`;
             catSprite.style.backgroundImage = `url('${catExpressions.talking}')`;
+            speechBubble.style.display = 'block';
+            speechBubble.textContent = '';
 
-            // Cat talks for 3 seconds without speech bubble
-            setTimeout(() => {
-                updateCatExpression(0);
-                showInputBox();
-            }, 3000);
+            let index = 0;
+            const typingInterval = setInterval(() => {
+                if (index < orderText.length) {
+                    speechBubble.textContent += orderText[index];
+                    index++;
+                } else {
+                    clearInterval(typingInterval);
+                    setTimeout(() => {
+                        updateCatExpression(0);
+                        showInputBox();
+                    }, 2000);
+                }
+            }, 50);
         }
 
         function showInputBox() {
