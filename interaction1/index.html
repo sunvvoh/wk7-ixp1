@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Comic Sans MS', 'Comic Sans', cursive;
             background-color: #ffffff;
             overflow: hidden;
             position: relative;
@@ -28,8 +28,7 @@
             color: #2d5016;
             background-color: #fff;
             padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 3px solid #333;
             z-index: 1000;
         }
 
@@ -48,27 +47,16 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 400px;
+            height: 60%;
             background-image: url('assets/taco truck.png');
-            background-size: contain;
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center bottom;
             z-index: 1;
         }
 
         #speech-bubble {
-            position: absolute;
-            top: 8%;
-            background-color: white;
-            padding: 20px 30px;
-            border-radius: 20px;
-            border: 3px solid #333;
-            font-size: 24px;
-            max-width: 600px;
-            text-align: center;
             display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 10;
         }
 
         #cat-sprite {
@@ -98,7 +86,6 @@
             padding: 15px 20px;
             width: 400px;
             border: 3px solid #333;
-            border-radius: 10px;
             text-align: center;
         }
 
@@ -107,8 +94,7 @@
             padding: 15px 40px;
             background-color: #4CAF50;
             color: white;
-            border: none;
-            border-radius: 10px;
+            border: 3px solid #333;
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s;
@@ -161,7 +147,6 @@
             background-position: center;
             display: none;
             border: 3px dashed transparent;
-            border-radius: 50%;
             transition: border-color 0.3s;
             z-index: 10;
         }
@@ -193,8 +178,7 @@
             display: none;
             background-color: rgba(255, 255, 255, 0.95);
             padding: 50px 80px;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 3px solid #333;
         }
 
         .slide-out-left {
@@ -218,6 +202,31 @@
             }
             to {
                 opacity: 1;
+            }
+        }
+
+        .money-toast {
+            position: absolute;
+            font-size: 36px;
+            font-weight: bold;
+            color: #4CAF50;
+            z-index: 100;
+            pointer-events: none;
+            animation: jumpAndFade 1.5s forwards;
+        }
+
+        @keyframes jumpAndFade {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -80px);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -120px);
             }
         }
     </style>
@@ -329,22 +338,12 @@
         function typeOrderText() {
             const orderText = `I want the ${currentOrder.protein}, ${currentOrder.vegetable}, and ${currentOrder.sauce} taco`;
             catSprite.style.backgroundImage = `url('${catExpressions.talking}')`;
-            speechBubble.style.display = 'block';
-            speechBubble.textContent = '';
 
-            let index = 0;
-            const typingInterval = setInterval(() => {
-                if (index < orderText.length) {
-                    speechBubble.textContent += orderText[index];
-                    index++;
-                } else {
-                    clearInterval(typingInterval);
-                    setTimeout(() => {
-                        updateCatExpression(0);
-                        showInputBox();
-                    }, 2000);
-                }
-            }, 50);
+            // Cat talks for 3 seconds without speech bubble
+            setTimeout(() => {
+                updateCatExpression(0);
+                showInputBox();
+            }, 3000);
         }
 
         function showInputBox() {
@@ -476,6 +475,9 @@
             totalMoney += moneyEarned;
             updateMoneyDisplay();
 
+            // Show money toast above cat
+            showMoneyToast(moneyEarned);
+
             // Animate cat and taco leaving
             setTimeout(() => {
                 catSprite.classList.add('slide-out-left');
@@ -499,6 +501,24 @@
 
         function updateMoneyDisplay() {
             moneyCounter.textContent = `$${totalMoney.toFixed(2)}`;
+        }
+
+        function showMoneyToast(amount) {
+            const toast = document.createElement('div');
+            toast.className = 'money-toast';
+            toast.textContent = `+$${amount.toFixed(2)}`;
+
+            // Position above cat
+            const catRect = catSprite.getBoundingClientRect();
+            toast.style.top = catRect.top + 'px';
+            toast.style.left = (catRect.left + catRect.width / 2) + 'px';
+
+            document.body.appendChild(toast);
+
+            // Remove after animation completes
+            setTimeout(() => {
+                toast.remove();
+            }, 1500);
         }
 
         function showFinalResult() {
