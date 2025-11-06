@@ -132,12 +132,10 @@
             background-repeat: no-repeat;
             background-position: center;
             cursor: grab;
-            transition: transform 0.2s, filter 0.2s;
         }
 
         .ingredient-option:hover {
-            transform: scale(1.1);
-            filter: brightness(1.2);
+            /* No hover effects */
         }
 
         .ingredient-option:active {
@@ -452,12 +450,21 @@
             // Update cat expression
             updateCatExpression(correctnessValue);
 
-            // Place ingredient on tortilla
+            // Place ingredient on tortilla in different positions
             const placedIngredient = document.createElement('div');
             placedIngredient.className = 'placed-ingredient';
             placedIngredient.style.backgroundImage = `url('${ingredientImages[ingredient]}')`;
             placedIngredient.style.bottom = '8%';
-            placedIngredient.style.left = '50%';
+
+            // Position based on phase so ingredients don't overlap
+            if (currentPhase === 'protein') {
+                placedIngredient.style.left = '40%';
+            } else if (currentPhase === 'vegetable') {
+                placedIngredient.style.left = '50%';
+            } else if (currentPhase === 'sauce') {
+                placedIngredient.style.left = '60%';
+            }
+
             placedIngredient.style.transform = 'translateX(-50%)';
             document.getElementById('game-container').appendChild(placedIngredient);
 
