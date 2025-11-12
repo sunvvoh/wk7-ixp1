@@ -238,9 +238,63 @@
                 transform: translate(-50%, -120px);
             }
         }
+
+        #title-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        #title-screen.hidden {
+            display: none;
+        }
+
+        #title-image {
+            width: 600px;
+            max-width: 80%;
+            height: auto;
+            margin-bottom: 50px;
+            background-image: url('assets/title.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            aspect-ratio: 16 / 9;
+        }
+
+        #start-button {
+            width: 300px;
+            height: 100px;
+            background-image: url('assets/start button.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #start-button:hover {
+            transform: scale(1.1);
+        }
+
+        #start-button:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
+    <div id="title-screen">
+        <div id="title-image"></div>
+        <div id="start-button"></div>
+    </div>
+
     <div id="money-counter">$0.00</div>
 
     <div id="game-container">
@@ -345,16 +399,39 @@
         }
 
         function typeOrderText() {
-            const orderText = `I want the ${currentOrder.protein}, ${currentOrder.vegetable}, and ${currentOrder.sauce} taco`;
+            const orderText = `I want the <b>${currentOrder.protein}</b>, <b>${currentOrder.vegetable}</b>, and <b>${currentOrder.sauce}</b> <b>taco</b>`;
             catSprite.style.backgroundImage = `url('${catExpressions.talking}')`;
             speechBubble.style.display = 'block';
-            speechBubble.textContent = '';
+            speechBubble.innerHTML = '';
 
+            let currentHTML = '';
+            let plainText = orderText.replace(/<\/?b>/g, ''); // Get plain text version for timing
             let index = 0;
+
             const typingInterval = setInterval(() => {
-                if (index < orderText.length) {
-                    speechBubble.textContent += orderText[index];
+                if (index < plainText.length) {
                     index++;
+                    // Build HTML progressively
+                    let tempText = '';
+                    let htmlIndex = 0;
+                    let charCount = 0;
+                    let inTag = false;
+
+                    while (charCount < index && htmlIndex < orderText.length) {
+                        if (orderText[htmlIndex] === '<') {
+                            inTag = true;
+                        }
+                        tempText += orderText[htmlIndex];
+                        if (orderText[htmlIndex] === '>') {
+                            inTag = false;
+                        }
+                        if (!inTag && orderText[htmlIndex] !== '<' && orderText[htmlIndex] !== '>') {
+                            charCount++;
+                        }
+                        htmlIndex++;
+                    }
+
+                    speechBubble.innerHTML = tempText;
                 } else {
                     clearInterval(typingInterval);
                     setTimeout(() => {
@@ -564,8 +641,14 @@
             finalMessage.classList.add('fade-in');
         }
 
-        // Start the game
-        startGame();
+        // Title screen handling
+        const titleScreen = document.getElementById('title-screen');
+        const startButton = document.getElementById('start-button');
+
+        startButton.addEventListener('click', () => {
+            titleScreen.classList.add('hidden');
+            startGame();
+        });
     </script>
 </body>
 </html>
