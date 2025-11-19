@@ -37,6 +37,7 @@
             font-size: 32px;
             font-weight: bold;
             color: #2d5016;
+            transition: opacity 1s;
         }
 
         #round-counter-container {
@@ -46,6 +47,7 @@
             width: 300px;
             height: 180px;
             z-index: 1000;
+            transition: opacity 1s;
         }
 
         #round-counter {
@@ -66,7 +68,7 @@
 
         #cat-icon {
             position: absolute;
-            left: 60px;
+            left: 70px;
             top: 50%;
             transform: translateY(-50%);
             width: 50px;
@@ -77,6 +79,10 @@
             background-position: center;
         }
 
+        #round-text {
+            margin-left: 10px;
+        }
+
         #game-container {
             width: 100%;
             height: 100vh;
@@ -85,6 +91,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            transition: opacity 1s;
         }
 
         #taco-truck {
@@ -713,6 +720,7 @@
             background-image: url('assets/table.png');
             display: none;
             z-index: 6;
+            transition: opacity 1s;
         }
 
         #table-left {
@@ -734,6 +742,7 @@
             background-image: url('assets/plant.png');
             display: none;
             z-index: 6;
+            transition: opacity 1s;
         }
 
         #plant-left {
@@ -1597,7 +1606,13 @@
 
                 setTimeout(() => {
                     businessElements.forEach(el => {
-                        if (el) el.style.opacity = '1';
+                        if (el) {
+                            el.style.opacity = '1';
+                            // Remove inline opacity style after transition completes
+                            setTimeout(() => {
+                                el.style.removeProperty('opacity');
+                            }, 1000);
+                        }
                     });
                     startNewRound();
                 }, 1000);
