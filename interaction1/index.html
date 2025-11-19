@@ -466,8 +466,8 @@
             inputContainer.style.bottom = '-550px'; // Reset position for next animation
             writingHand.style.display = 'none';
             writingHand.classList.remove('slide-up', 'slide-down');
-            writingHand.style.left = '';
-            writingHand.style.top = '';
+            writingHand.style.removeProperty('left');
+            writingHand.style.removeProperty('top');
             writingHand.style.bottom = '-550px'; // Reset position for next animation
             ingredientsContainer.style.display = 'none';
             tortilla.style.display = 'none';
@@ -634,8 +634,8 @@
                 inputContainer.classList.add('slide-down');
 
                 // Reset writing hand to use bottom-based positioning for animation
-                writingHand.style.left = '';
-                writingHand.style.top = '';
+                writingHand.style.removeProperty('left');
+                writingHand.style.removeProperty('top');
                 writingHand.style.bottom = '0px';
                 writingHand.classList.add('slide-down');
 
