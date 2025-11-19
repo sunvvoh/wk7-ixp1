@@ -700,6 +700,49 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+
+        /* Business hour tables and plants */
+        .business-table {
+            position: absolute;
+            bottom: 18%;
+            width: 120px;
+            height: 120px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url('assets/table.png');
+            display: none;
+            z-index: 6;
+        }
+
+        #table-left {
+            left: 15%;
+        }
+
+        #table-right {
+            right: 15%;
+        }
+
+        .business-plant {
+            position: absolute;
+            top: 10%;
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url('assets/plant.png');
+            display: none;
+            z-index: 6;
+        }
+
+        #plant-left {
+            left: 10%;
+        }
+
+        #plant-right {
+            right: 10%;
+        }
     </style>
 </head>
 <body>
@@ -719,6 +762,13 @@
     <div id="game-container">
         <div id="taco-truck"></div>
         <div id="countertop"></div>
+
+        <!-- Business hour tables and plants -->
+        <div id="plant-left" class="business-plant"></div>
+        <div id="plant-right" class="business-plant"></div>
+        <div id="table-left" class="business-table"></div>
+        <div id="table-right" class="business-table"></div>
+
         <div id="speech-bubble"></div>
         <div id="cat-sprite"></div>
 
@@ -884,12 +934,70 @@
         // Purchase cart
         let purchaseCart = { tables: 0, plants: 0 };
 
+        // Business hour elements
+        const plantLeft = document.getElementById('plant-left');
+        const plantRight = document.getElementById('plant-right');
+        const tableLeft = document.getElementById('table-left');
+        const tableRight = document.getElementById('table-right');
+
+        // Track which positions are active (for random selection)
+        let activePlantPosition = null;
+        let activeTablePosition = null;
+
+        // Update business hour tables and plants display
+        function updateBusinessHourDisplay() {
+            // Hide all first
+            plantLeft.style.display = 'none';
+            plantRight.style.display = 'none';
+            tableLeft.style.display = 'none';
+            tableRight.style.display = 'none';
+
+            // Show plants based on ownership
+            if (plantsOwned === 2) {
+                plantLeft.style.display = 'block';
+                plantRight.style.display = 'block';
+                activePlantPosition = 'both';
+            } else if (plantsOwned === 1) {
+                // Random position
+                if (activePlantPosition === null || (activePlantPosition !== 'left' && activePlantPosition !== 'right')) {
+                    activePlantPosition = Math.random() < 0.5 ? 'left' : 'right';
+                }
+                if (activePlantPosition === 'left') {
+                    plantLeft.style.display = 'block';
+                } else {
+                    plantRight.style.display = 'block';
+                }
+            } else {
+                activePlantPosition = null;
+            }
+
+            // Show tables based on ownership
+            if (tablesOwned === 2) {
+                tableLeft.style.display = 'block';
+                tableRight.style.display = 'block';
+                activeTablePosition = 'both';
+            } else if (tablesOwned === 1) {
+                // Random position
+                if (activeTablePosition === null || (activeTablePosition !== 'left' && activeTablePosition !== 'right')) {
+                    activeTablePosition = Math.random() < 0.5 ? 'left' : 'right';
+                }
+                if (activeTablePosition === 'left') {
+                    tableLeft.style.display = 'block';
+                } else {
+                    tableRight.style.display = 'block';
+                }
+            } else {
+                activeTablePosition = null;
+            }
+        }
+
         // Initialize Game
         function startGame() {
             currentRound = 0;
             totalMoney = 0;
             updateMoneyDisplay();
             roundText.textContent = '0/3';
+            updateBusinessHourDisplay();
             startNewRound();
         }
 
@@ -1242,8 +1350,26 @@
                         totalMoney += tableBonus;
                         updateMoneyDisplay();
 
-                        // Show toast above a random table position (will be implemented when tables are added)
-                        showMoneyToast(tableBonus, false, null);
+                        // Show toast above a specific table
+                        let tableElement;
+                        if (activeTablePosition === 'both') {
+                            // Random choice between left and right
+                            tableElement = Math.random() < 0.5 ? tableLeft : tableRight;
+                        } else if (activeTablePosition === 'left') {
+                            tableElement = tableLeft;
+                        } else if (activeTablePosition === 'right') {
+                            tableElement = tableRight;
+                        }
+
+                        if (tableElement) {
+                            const tableRect = tableElement.getBoundingClientRect();
+                            showMoneyToast(tableBonus, false, {
+                                top: tableRect.top,
+                                left: tableRect.left + tableRect.width / 2
+                            });
+                        } else {
+                            showMoneyToast(tableBonus, false, null);
+                        }
                     }, 5000);
                 }
 
@@ -1305,7 +1431,11 @@
             const businessElements = [
                 document.getElementById('game-container'),
                 moneyCounter,
-                document.getElementById('round-counter-container')
+                document.getElementById('round-counter-container'),
+                plantLeft,
+                plantRight,
+                tableLeft,
+                tableRight
             ];
 
             businessElements.forEach(el => {
@@ -1417,6 +1547,7 @@
 
                 purchaseCart = { tables: 0, plants: 0 };
                 updateUpgradeDisplay();
+                updateBusinessHourDisplay();
 
                 showMoneyToast(`Purchase complete!`, false);
             }
@@ -1434,6 +1565,9 @@
                 afterHoursScreen.style.display = 'none';
                 afterHoursScreen.classList.remove('fade-out');
 
+                // Update which tables/plants should be visible
+                updateBusinessHourDisplay();
+
                 // Show business elements
                 const businessElements = [
                     document.getElementById('game-container'),
@@ -1441,9 +1575,21 @@
                     document.getElementById('round-counter-container')
                 ];
 
+                // Add visible tables and plants to elements to fade in
+                if (plantLeft.style.display === 'block') businessElements.push(plantLeft);
+                if (plantRight.style.display === 'block') businessElements.push(plantRight);
+                if (tableLeft.style.display === 'block') businessElements.push(tableLeft);
+                if (tableRight.style.display === 'block') businessElements.push(tableRight);
+
                 businessElements.forEach(el => {
                     if (el) {
-                        el.style.display = el.id === 'game-container' ? 'flex' : 'block';
+                        if (el.id === 'game-container') {
+                            el.style.display = 'flex';
+                        } else if (el.classList.contains('business-plant') || el.classList.contains('business-table')) {
+                            // Display is already set by updateBusinessHourDisplay
+                        } else {
+                            el.style.display = 'block';
+                        }
                         el.classList.remove('fade-out');
                         el.style.opacity = '0';
                     }
