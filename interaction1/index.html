@@ -466,6 +466,8 @@
             inputContainer.style.bottom = '-550px'; // Reset position for next animation
             writingHand.style.display = 'none';
             writingHand.classList.remove('slide-up', 'slide-down');
+            writingHand.style.left = '';
+            writingHand.style.top = '';
             writingHand.style.bottom = '-550px'; // Reset position for next animation
             ingredientsContainer.style.display = 'none';
             tortilla.style.display = 'none';
@@ -545,8 +547,10 @@
             writingHand.style.display = 'block';
             writingHand.classList.add('slide-up');
 
-            // Position writing hand and focus input after animation completes
+            // After animation completes, switch to caret tracking mode
             setTimeout(() => {
+                writingHand.classList.remove('slide-up');
+                writingHand.style.bottom = 'auto'; // Switch from bottom to top/left positioning
                 updateWritingHandPosition();
                 orderInput.focus();
             }, 700); // Show after slide-up animation completes
@@ -628,7 +632,11 @@
                 // Trigger slide-down animation
                 inputContainer.classList.remove('slide-up');
                 inputContainer.classList.add('slide-down');
-                writingHand.classList.remove('slide-up');
+
+                // Reset writing hand to use bottom-based positioning for animation
+                writingHand.style.left = '';
+                writingHand.style.top = '';
+                writingHand.style.bottom = '0px';
                 writingHand.classList.add('slide-down');
 
                 // Wait for animation to complete before starting ingredient phase
