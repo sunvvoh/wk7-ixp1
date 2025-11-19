@@ -639,7 +639,14 @@
                 writingHand.style.removeProperty('left');
                 writingHand.style.removeProperty('top');
                 writingHand.style.bottom = '0px';
-                writingHand.classList.add('slide-down');
+
+                // Force reflow before adding animation class
+                void writingHand.offsetHeight;
+
+                // Add slide-down animation after a small delay to ensure positioning takes effect
+                setTimeout(() => {
+                    writingHand.classList.add('slide-down');
+                }, 10);
 
                 // Wait for animation to complete before starting ingredient phase
                 setTimeout(() => {
