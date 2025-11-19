@@ -526,47 +526,51 @@
 
         function updateWritingHandPosition() {
             const inputRect = orderInput.getBoundingClientRect();
-            const text = orderInput.value;
             const caretPos = orderInput.selectionStart;
 
-            // Get computed styles
+            // Create a mirror div to calculate exact caret position
+            const mirror = document.createElement('div');
             const style = window.getComputedStyle(orderInput);
-            const paddingLeft = parseInt(style.paddingLeft);
-            const paddingTop = parseInt(style.paddingTop);
-            const fontSize = parseInt(style.fontSize);
-            const lineHeight = parseFloat(style.lineHeight) || (fontSize * 1.2);
-            const textAreaWidth = orderInput.clientWidth - paddingLeft - parseInt(style.paddingRight);
 
-            // Calculate which visual line the caret is on by simulating word wrapping
-            let currentLine = 0;
-            let currentX = 0;
-            let textBeforeCaret = text.substring(0, caretPos);
+            // Copy all relevant styles
+            mirror.style.position = 'absolute';
+            mirror.style.visibility = 'hidden';
+            mirror.style.whiteSpace = 'pre-wrap';
+            mirror.style.wordWrap = 'break-word';
+            mirror.style.width = style.width;
+            mirror.style.font = style.font;
+            mirror.style.padding = style.padding;
+            mirror.style.border = style.border;
+            mirror.style.boxSizing = style.boxSizing;
 
-            // Split by words and measure
-            let words = textBeforeCaret.split(' ');
-            let lineText = '';
+            // Add text up to caret position
+            const textBeforeCaret = orderInput.value.substring(0, caretPos);
+            mirror.textContent = textBeforeCaret;
 
-            for (let i = 0; i < words.length; i++) {
-                let testText = lineText + (lineText ? ' ' : '') + words[i];
-                let testWidth = getTextWidth(testText, orderInput);
+            // Add a span at caret position to measure
+            const caretSpan = document.createElement('span');
+            caretSpan.textContent = '|';
+            mirror.appendChild(caretSpan);
 
-                if (testWidth > textAreaWidth && lineText) {
-                    // Word doesn't fit, move to next line
-                    currentLine++;
-                    lineText = words[i];
-                    currentX = getTextWidth(words[i], orderInput);
-                } else {
-                    lineText = testText;
-                    currentX = testWidth;
-                }
-            }
+            // Add to document to measure
+            document.body.appendChild(mirror);
 
-            // Position of caret
-            const caretX = inputRect.left + paddingLeft + currentX;
-            const caretY = inputRect.top + paddingTop + (currentLine * lineHeight);
+            // Get caret span position relative to mirror
+            const caretSpanRect = caretSpan.getBoundingClientRect();
+            const mirrorRect = mirror.getBoundingClientRect();
 
-            // The pencil tip is now at the top-left corner of the image
-            // Position the hand so pencil tip aligns with caret (offset left by 50px, up by 100px)
+            // Calculate offsets
+            const caretOffsetX = caretSpanRect.left - mirrorRect.left;
+            const caretOffsetY = caretSpanRect.top - mirrorRect.top;
+
+            // Remove mirror
+            document.body.removeChild(mirror);
+
+            // Calculate absolute position
+            const caretX = inputRect.left + caretOffsetX;
+            const caretY = inputRect.top + caretOffsetY;
+
+            // Position the hand (offset left by 50px, up by 100px)
             writingHand.style.left = (caretX - 50) + 'px';
             writingHand.style.top = (caretY - 100) + 'px';
         }
