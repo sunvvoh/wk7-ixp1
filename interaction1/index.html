@@ -23,13 +23,39 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 32px;
+            width: 200px;
+            height: 120px;
+            background-image: url('assets/money.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
             font-weight: bold;
             color: #2d5016;
-            background-color: #fff;
-            padding: 15px 25px;
-            border: 3px solid #333;
+        }
+
+        #round-counter {
+            position: absolute;
+            top: 150px;
+            right: 20px;
+            width: 200px;
+            height: 120px;
+            background-image: url('assets/money.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2d5016;
         }
 
         #game-container {
@@ -381,6 +407,7 @@
     </div>
 
     <div id="money-counter">$0.00</div>
+    <div id="round-counter">1/3</div>
 
     <div id="game-container">
         <div id="taco-truck"></div>
@@ -444,6 +471,7 @@
         const ingredientsContainer = document.getElementById('ingredients-container');
         const tortilla = document.getElementById('tortilla');
         const moneyCounter = document.getElementById('money-counter');
+        const roundCounter = document.getElementById('round-counter');
         const finalMessage = document.getElementById('final-message');
 
         // Initialize Game
@@ -451,6 +479,7 @@
             currentRound = 0;
             totalMoney = 0;
             updateMoneyDisplay();
+            roundCounter.textContent = '0/3';
             startNewRound();
         }
 
@@ -458,6 +487,7 @@
             currentRound++;
             correctnessValue = 0;
             currentPhase = 'ordering';
+            roundCounter.textContent = `${currentRound}/3`;
 
             // Reset UI
             speechBubble.style.display = 'none';
@@ -794,7 +824,7 @@
                     catSprite.classList.remove('slide-out-left');
                     tortilla.classList.remove('slide-out-left');
 
-                    if (currentRound < 4) {
+                    if (currentRound < 3) {
                         startNewRound();
                     } else {
                         showFinalResult();
@@ -830,7 +860,7 @@
             tortilla.style.display = 'none';
             catSprite.style.display = 'none';
 
-            if (totalMoney >= 20) {
+            if (totalMoney >= 15) {
                 finalMessage.textContent = 'you were able to pay rent! good job!';
             } else {
                 finalMessage.textContent = "you couldn't pay rent... oh no...";
