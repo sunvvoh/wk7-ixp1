@@ -527,25 +527,43 @@
         function updateWritingHandPosition() {
             const inputRect = orderInput.getBoundingClientRect();
             const text = orderInput.value;
+            const caretPos = orderInput.selectionStart;
 
-            // Get text metrics to calculate caret position
-            const lines = text.split('\n');
-            const currentLineIndex = text.substring(0, orderInput.selectionStart).split('\n').length - 1;
-            const currentLine = lines.slice(0, currentLineIndex + 1).join('\n');
-            const textUpToCaret = currentLine.substring(currentLine.lastIndexOf('\n') + 1);
-
-            // Calculate text width up to caret
-            const textWidth = getTextWidth(textUpToCaret, orderInput);
-
-            // Calculate caret position
+            // Get computed styles
             const style = window.getComputedStyle(orderInput);
             const paddingLeft = parseInt(style.paddingLeft);
             const paddingTop = parseInt(style.paddingTop);
-            const lineHeight = parseInt(style.fontSize) * 1.2; // Approximate line height
+            const fontSize = parseInt(style.fontSize);
+            const lineHeight = parseFloat(style.lineHeight) || (fontSize * 1.2);
+            const textAreaWidth = orderInput.clientWidth - paddingLeft - parseInt(style.paddingRight);
 
-            // Position of caret within textarea
-            const caretX = inputRect.left + paddingLeft + textWidth;
-            const caretY = inputRect.top + paddingTop + (currentLineIndex * lineHeight);
+            // Calculate which visual line the caret is on by simulating word wrapping
+            let currentLine = 0;
+            let currentX = 0;
+            let textBeforeCaret = text.substring(0, caretPos);
+
+            // Split by words and measure
+            let words = textBeforeCaret.split(' ');
+            let lineText = '';
+
+            for (let i = 0; i < words.length; i++) {
+                let testText = lineText + (lineText ? ' ' : '') + words[i];
+                let testWidth = getTextWidth(testText, orderInput);
+
+                if (testWidth > textAreaWidth && lineText) {
+                    // Word doesn't fit, move to next line
+                    currentLine++;
+                    lineText = words[i];
+                    currentX = getTextWidth(words[i], orderInput);
+                } else {
+                    lineText = testText;
+                    currentX = testWidth;
+                }
+            }
+
+            // Position of caret
+            const caretX = inputRect.left + paddingLeft + currentX;
+            const caretY = inputRect.top + paddingTop + (currentLine * lineHeight);
 
             // The pencil tip is now at the top-left corner of the image
             // Position the hand so pencil tip aligns with caret (offset left by 50px, up by 100px)
