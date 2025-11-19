@@ -82,18 +82,19 @@
 
         #input-container {
             position: absolute;
-            bottom: -200px;
+            bottom: -550px;
             display: none;
             flex-direction: column;
             align-items: center;
             gap: 15px;
             z-index: 10;
-            width: 450px;
+            width: 500px;
             height: 550px;
             background-image: url('assets/notepad.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            transform: scaleX(-1);
         }
 
         #input-container.slide-up {
@@ -102,10 +103,10 @@
 
         @keyframes slideUpFromBottom {
             from {
-                bottom: -200px;
+                bottom: -550px;
             }
             to {
-                bottom: 10%;
+                bottom: 0px;
             }
         }
 
@@ -113,6 +114,7 @@
             font-size: 20px;
             padding: 20px 30px 20px 60px;
             width: 320px;
+            height: 150px;
             margin-top: 80px;
             margin-left: -20px;
             border: none;
@@ -122,12 +124,16 @@
             font-family: 'Comic Sans MS', 'Comic Sans', cursive;
             caret-color: transparent;
             outline: none;
+            resize: none;
+            overflow: hidden;
+            word-wrap: break-word;
+            transform: scaleX(-1);
         }
 
         #writing-hand {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 500px;
+            height: 500px;
             background-image: url('assets/user typing.png');
             background-size: contain;
             background-repeat: no-repeat;
@@ -135,6 +141,7 @@
             pointer-events: none;
             display: none;
             z-index: 15;
+            transform: scaleX(-1);
         }
 
         #submit-button {
@@ -149,14 +156,15 @@
             margin-top: 20px;
             transition: transform 0.2s;
             background-color: transparent;
+            transform: scaleX(-1);
         }
 
         #submit-button:hover {
-            transform: scale(1.1);
+            transform: scaleX(-1.1) scaleY(1.1);
         }
 
         #submit-button:active {
-            transform: scale(0.95);
+            transform: scaleX(-0.95) scaleY(0.95);
         }
 
         #ingredients-container {
@@ -350,7 +358,7 @@
 
         <div id="input-container">
             <div id="writing-hand"></div>
-            <input type="text" id="order-input" placeholder="">
+            <textarea id="order-input" placeholder=""></textarea>
             <button id="submit-button"></button>
         </div>
 
@@ -422,7 +430,7 @@
             speechBubble.style.display = 'none';
             inputContainer.style.display = 'none';
             inputContainer.classList.remove('slide-up');
-            inputContainer.style.bottom = '-200px'; // Reset position for next animation
+            inputContainer.style.bottom = '-550px'; // Reset position for next animation
             writingHand.style.display = 'none';
             ingredientsContainer.style.display = 'none';
             tortilla.style.display = 'none';
@@ -508,23 +516,22 @@
 
         function updateWritingHandPosition() {
             const inputRect = orderInput.getBoundingClientRect();
-            const textWidth = getTextWidth(orderInput.value, orderInput);
+            const containerRect = inputContainer.getBoundingClientRect();
 
-            // Position the pencil tip at the caret
-            const caretX = inputRect.left + parseInt(window.getComputedStyle(orderInput).paddingLeft) + textWidth;
-            const caretY = inputRect.top + parseInt(window.getComputedStyle(orderInput).paddingTop) + 10;
+            // Since everything is flipped and the textarea is within the notepad,
+            // position the writing hand centered on the input area
+            // The pencil tip in the flipped 500x500 image is approximately at:
+            // x: 400px from left edge (flipped from ~100px)
+            // y: 420px from top edge
 
-            // Offset so pencil tip is at caret position
-            writingHand.style.left = (caretX - 25) + 'px'; // Adjust for pencil tip position
-            writingHand.style.top = (caretY - 35) + 'px';
-        }
+            // Center the writing hand on the textarea
+            const centerX = containerRect.left + (containerRect.width / 2);
+            const centerY = inputRect.top + (inputRect.height / 2);
 
-        function getTextWidth(text, element) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            const style = window.getComputedStyle(element);
-            context.font = style.font;
-            return context.measureText(text).width;
+            // Adjust so pencil tip aligns with approximately where typing occurs
+            // The pencil tip is at (400, 420) in the 500x500 image
+            writingHand.style.left = (centerX - 400) + 'px';
+            writingHand.style.top = (centerY - 420) + 'px';
         }
 
         submitButton.addEventListener('click', checkOrder);
