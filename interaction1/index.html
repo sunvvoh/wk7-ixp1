@@ -860,6 +860,30 @@
         const roundText = document.getElementById('round-text');
         const finalMessage = document.getElementById('final-message');
 
+        // After Hours elements
+        const afterHoursScreen = document.getElementById('after-hours-screen');
+        const dayCompleteText = document.getElementById('day-complete-text');
+        const upgradeBtn = document.getElementById('upgrade-button');
+        const nextDayBtn = document.getElementById('next-day-button');
+
+        // Upgrade screen elements
+        const upgradeScreen = document.getElementById('upgrade-screen');
+        const backButton = document.getElementById('back-button');
+        const upgradeMoneyDisplay = document.getElementById('upgrade-money-display');
+        const tableCountElem = document.getElementById('table-count');
+        const plantCountElem = document.getElementById('plant-count');
+        const buyButton = document.getElementById('buy-button');
+
+        // Receipt elements
+        const receiptTableCount = document.getElementById('receipt-table-count');
+        const receiptPlantCount = document.getElementById('receipt-plant-count');
+        const receiptTableCost = document.getElementById('receipt-table-cost');
+        const receiptPlantCost = document.getElementById('receipt-plant-cost');
+        const receiptTotal = document.getElementById('receipt-total');
+
+        // Purchase cart
+        let purchaseCart = { tables: 0, plants: 0 };
+
         // Initialize Game
         function startGame() {
             currentRound = 0;
@@ -1201,11 +1225,27 @@
 
             // Small delay before showing payment
             setTimeout(() => {
+                // Apply plant multiplier
+                const plantBonus = plantsOwned * PLANT_MULTIPLIER;
+                moneyEarned = moneyEarned * (1 + plantBonus);
+
                 totalMoney += moneyEarned;
                 updateMoneyDisplay();
 
                 // Show money toast above cat
                 showMoneyToast(moneyEarned);
+
+                // Table bonus after 5 seconds
+                if (tablesOwned > 0) {
+                    setTimeout(() => {
+                        let tableBonus = TABLE_BONUS * (1 + plantBonus);
+                        totalMoney += tableBonus;
+                        updateMoneyDisplay();
+
+                        // Show toast above a random table position (will be implemented when tables are added)
+                        showMoneyToast(tableBonus, false, null);
+                    }, 5000);
+                }
 
                 // Animate cat and takeout leaving
                 setTimeout(() => {
@@ -1231,15 +1271,26 @@
             moneyCounter.textContent = `$${totalMoney.toFixed(2)}`;
         }
 
-        function showMoneyToast(amount) {
+        function showMoneyToast(amount, isError = false, position = null) {
             const toast = document.createElement('div');
             toast.className = 'money-toast';
-            toast.textContent = `+$${amount.toFixed(2)}`;
 
-            // Position above cat
-            const catRect = catSprite.getBoundingClientRect();
-            toast.style.top = catRect.top + 'px';
-            toast.style.left = (catRect.left + catRect.width / 2) + 'px';
+            if (isError) {
+                toast.textContent = amount; // amount is error message
+                toast.style.color = '#ff4444';
+            } else {
+                toast.textContent = typeof amount === 'string' ? amount : `+$${amount.toFixed(2)}`;
+            }
+
+            // Position
+            if (position) {
+                toast.style.top = position.top + 'px';
+                toast.style.left = position.left + 'px';
+            } else {
+                const catRect = catSprite.getBoundingClientRect();
+                toast.style.top = catRect.top + 'px';
+                toast.style.left = (catRect.left + catRect.width / 2) + 'px';
+            }
 
             document.body.appendChild(toast);
 
@@ -1250,14 +1301,169 @@
         }
 
         function showFinalResult() {
-            ingredientsContainer.style.display = 'none';
-            tortilla.style.display = 'none';
-            catSprite.style.display = 'none';
+            // Fade out business hour elements
+            const businessElements = [
+                document.getElementById('game-container'),
+                moneyCounter,
+                document.getElementById('round-counter-container')
+            ];
 
-            // Post-day interaction will be added here later
-            finalMessage.textContent = 'Day complete!';
+            businessElements.forEach(el => {
+                if (el) el.classList.add('fade-out');
+            });
+
+            // After fade out, show After Hours screen
+            setTimeout(() => {
+                businessElements.forEach(el => {
+                    if (el) el.style.display = 'none';
+                });
+
+                showAfterHoursScreen();
+            }, 2000);
+        }
+
+        function showAfterHoursScreen() {
+            dayCompleteText.textContent = `Day ${currentDay} complete!`;
+            afterHoursScreen.style.display = 'block';
+
+            setTimeout(() => {
+                afterHoursScreen.classList.add('fade-in');
+            }, 1000);
+        }
+
+        // After Hours button handlers
+        upgradeBtn.addEventListener('click', () => {
+            afterHoursScreen.style.display = 'none';
+            showUpgradeScreen();
+        });
+
+        nextDayBtn.addEventListener('click', () => {
+            if (currentDay < TOTAL_DAYS) {
+                startNextDay();
+            } else {
+                showGameComplete();
+            }
+        });
+
+        function showUpgradeScreen() {
+            upgradeScreen.style.display = 'block';
+            upgradeMoneyDisplay.textContent = `$${totalMoney.toFixed(2)}`;
+            purchaseCart = { tables: 0, plants: 0 };
+            updateUpgradeDisplay();
+        }
+
+        function updateUpgradeDisplay() {
+            tableCountElem.textContent = purchaseCart.tables;
+            plantCountElem.textContent = purchaseCart.plants;
+            updateReceipt();
+        }
+
+        function updateReceipt() {
+            const tableCost = purchaseCart.tables * TABLE_COST;
+            const plantCost = purchaseCart.plants * PLANT_COST;
+            const total = tableCost + plantCost;
+
+            receiptTableCount.textContent = purchaseCart.tables;
+            receiptPlantCount.textContent = purchaseCart.plants;
+            receiptTableCost.textContent = `$${tableCost.toFixed(2)}`;
+            receiptPlantCost.textContent = `$${plantCost.toFixed(2)}`;
+            receiptTotal.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Upgrade controls
+        document.querySelectorAll('.minus-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.dataset.item;
+                if (item === 'table' && purchaseCart.tables > 0) {
+                    purchaseCart.tables--;
+                } else if (item === 'plant' && purchaseCart.plants > 0) {
+                    purchaseCart.plants--;
+                }
+                updateUpgradeDisplay();
+            });
+        });
+
+        document.querySelectorAll('.plus-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.dataset.item;
+                if (item === 'table' && (tablesOwned + purchaseCart.tables) < MAX_TABLES) {
+                    purchaseCart.tables++;
+                } else if (item === 'plant' && (plantsOwned + purchaseCart.plants) < MAX_PLANTS) {
+                    purchaseCart.plants++;
+                }
+                updateUpgradeDisplay();
+            });
+        });
+
+        backButton.addEventListener('click', () => {
+            upgradeScreen.style.display = 'none';
+            afterHoursScreen.style.display = 'block';
+        });
+
+        buyButton.addEventListener('click', () => {
+            const totalCost = (purchaseCart.tables * TABLE_COST) + (purchaseCart.plants * PLANT_COST);
+
+            if (totalCost > totalMoney) {
+                showMoneyToast("You don't have enough money!", true);
+                return;
+            }
+
+            if (totalCost > 0) {
+                totalMoney -= totalCost;
+                tablesOwned += purchaseCart.tables;
+                plantsOwned += purchaseCart.plants;
+                updateMoneyDisplay();
+                upgradeMoneyDisplay.textContent = `$${totalMoney.toFixed(2)}`;
+
+                purchaseCart = { tables: 0, plants: 0 };
+                updateUpgradeDisplay();
+
+                showMoneyToast(`Purchase complete!`, false);
+            }
+        });
+
+        function startNextDay() {
+            currentDay++;
+            currentRound = 0;
+
+            // Fade out after hours screen
+            afterHoursScreen.classList.remove('fade-in');
+            afterHoursScreen.classList.add('fade-out');
+
+            setTimeout(() => {
+                afterHoursScreen.style.display = 'none';
+                afterHoursScreen.classList.remove('fade-out');
+
+                // Show business elements
+                const businessElements = [
+                    document.getElementById('game-container'),
+                    moneyCounter,
+                    document.getElementById('round-counter-container')
+                ];
+
+                businessElements.forEach(el => {
+                    if (el) {
+                        el.style.display = el.id === 'game-container' ? 'flex' : 'block';
+                        el.classList.remove('fade-out');
+                        el.style.opacity = '0';
+                    }
+                });
+
+                setTimeout(() => {
+                    businessElements.forEach(el => {
+                        if (el) el.style.opacity = '1';
+                    });
+                    startNewRound();
+                }, 1000);
+            }, 2000);
+        }
+
+        function showGameComplete() {
+            afterHoursScreen.style.display = 'none';
+            finalMessage.textContent = totalMoney >= GOAL_MONEY ?
+                `Congratulations! You earned $${totalMoney.toFixed(2)}!` :
+                `You earned $${totalMoney.toFixed(2)}. Goal was $${GOAL_MONEY}.`;
             finalMessage.style.display = 'block';
-            finalMessage.classList.add('fade-in');
         }
 
         // Title screen handling
