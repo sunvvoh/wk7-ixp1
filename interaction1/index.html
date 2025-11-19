@@ -152,6 +152,28 @@
             pointer-events: none;
             display: none;
             z-index: 15;
+            bottom: -550px;
+        }
+
+        #writing-hand.slide-up {
+            animation: slideUpFromBottom 0.67s forwards;
+        }
+
+        #writing-hand.slide-down {
+            animation: slideDownOffScreen 0.67s forwards;
+        }
+
+        #countertop {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background-image: url('assets/countertop.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 4;
         }
 
         #submit-button {
@@ -362,6 +384,7 @@
 
     <div id="game-container">
         <div id="taco-truck"></div>
+        <div id="countertop"></div>
         <div id="speech-bubble"></div>
         <div id="cat-sprite"></div>
 
@@ -442,6 +465,8 @@
             inputContainer.classList.remove('slide-up');
             inputContainer.style.bottom = '-550px'; // Reset position for next animation
             writingHand.style.display = 'none';
+            writingHand.classList.remove('slide-up', 'slide-down');
+            writingHand.style.bottom = '-550px'; // Reset position for next animation
             ingredientsContainer.style.display = 'none';
             tortilla.style.display = 'none';
             orderInput.value = '';
@@ -516,9 +541,12 @@
             inputContainer.style.display = 'flex';
             inputContainer.classList.add('slide-up');
 
-            // Show writing hand and position it
+            // Animate writing hand with notepad
+            writingHand.style.display = 'block';
+            writingHand.classList.add('slide-up');
+
+            // Position writing hand and focus input after animation completes
             setTimeout(() => {
-                writingHand.style.display = 'block';
                 updateWritingHandPosition();
                 orderInput.focus();
             }, 700); // Show after slide-up animation completes
@@ -600,12 +628,15 @@
                 // Trigger slide-down animation
                 inputContainer.classList.remove('slide-up');
                 inputContainer.classList.add('slide-down');
-                writingHand.style.display = 'none';
+                writingHand.classList.remove('slide-up');
+                writingHand.classList.add('slide-down');
 
                 // Wait for animation to complete before starting ingredient phase
                 setTimeout(() => {
                     inputContainer.style.display = 'none';
                     inputContainer.classList.remove('slide-down');
+                    writingHand.style.display = 'none';
+                    writingHand.classList.remove('slide-down');
                     startIngredientPhase('protein');
                 }, 670); // Match animation duration
             } else {
