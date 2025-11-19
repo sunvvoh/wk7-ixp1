@@ -432,6 +432,274 @@
         #start-button:active {
             transform: scale(0.95);
         }
+
+        /* After Hours Screen */
+        #after-hours-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: none;
+            opacity: 0;
+            z-index: 2000;
+            transition: opacity 1s;
+        }
+
+        #after-hours-screen.fade-in {
+            opacity: 1;
+        }
+
+        #after-hours-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/after hours.png');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+
+        #day-complete-text {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 72px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+
+        #after-hours-buttons {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+        }
+
+        #upgrade-button, #next-day-button {
+            width: 400px;
+            height: 150px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background-color: transparent;
+        }
+
+        #upgrade-button {
+            background-image: url('assets/upgrade after hours.png');
+        }
+
+        #next-day-button {
+            background-image: url('assets/next day after hours.png');
+        }
+
+        #upgrade-button:hover, #next-day-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Upgrade Screen */
+        #upgrade-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #0d1b2e;
+            display: none;
+            z-index: 3000;
+        }
+
+        #back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 250px;
+            height: 150px;
+            background-image: url('assets/money.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #back-button span {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        #back-button:hover {
+            transform: scale(1.05);
+        }
+
+        #upgrade-money-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 250px;
+            height: 150px;
+            background-image: url('assets/money.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        #upgrade-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 60px;
+            align-items: flex-start;
+        }
+
+        .upgrade-item {
+            background-color: rgba(128, 128, 128, 0.5);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            width: 250px;
+        }
+
+        .upgrade-header {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .upgrade-image-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upgrade-item-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .upgrade-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .minus-btn, .plus-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 32px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .minus-btn:hover, .plus-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .upgrade-count {
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+            min-width: 40px;
+        }
+
+        #receipt-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+        }
+
+        #receipt-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #receipt-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            padding: 40px 20px;
+        }
+
+        .receipt-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .receipt-line.total-line {
+            border-top: 2px solid #333;
+            padding-top: 20px;
+            margin-top: 30px;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        #buy-button {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 350px;
+            height: 150px;
+            background-image: url('assets/buy.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background-color: transparent;
+        }
+
+        #buy-button:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* Fade animations */
+        .fade-out {
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -467,14 +735,91 @@
         <div id="final-message"></div>
     </div>
 
+    <!-- After Hours Screen -->
+    <div id="after-hours-screen">
+        <div id="after-hours-bg"></div>
+        <div id="day-complete-text">Day 1 complete!</div>
+        <div id="after-hours-buttons">
+            <button id="upgrade-button"></button>
+            <button id="next-day-button"></button>
+        </div>
+    </div>
+
+    <!-- Upgrade Screen -->
+    <div id="upgrade-screen">
+        <div id="back-button">
+            <span>back</span>
+        </div>
+        <div id="upgrade-money-display">$0.00</div>
+
+        <div id="upgrade-content">
+            <div class="upgrade-item">
+                <div class="upgrade-header">Table (max: 2)</div>
+                <div class="upgrade-image-container">
+                    <img src="assets/table.png" alt="Table" class="upgrade-item-image">
+                </div>
+                <div class="upgrade-controls">
+                    <button class="minus-btn" data-item="table">-</button>
+                    <span class="upgrade-count" id="table-count">0</span>
+                    <button class="plus-btn" data-item="table">+</button>
+                </div>
+            </div>
+
+            <div class="upgrade-item">
+                <div class="upgrade-header">Plant (max: 2)</div>
+                <div class="upgrade-image-container">
+                    <img src="assets/plant.png" alt="Plant" class="upgrade-item-image">
+                </div>
+                <div class="upgrade-controls">
+                    <button class="minus-btn" data-item="plant">-</button>
+                    <span class="upgrade-count" id="plant-count">0</span>
+                    <button class="plus-btn" data-item="plant">+</button>
+                </div>
+            </div>
+
+            <div id="receipt-container">
+                <img src="assets/blank receipt.png" alt="Receipt" id="receipt-bg">
+                <div id="receipt-content">
+                    <div class="receipt-line">
+                        <span>Table x <span id="receipt-table-count">0</span></span>
+                        <span id="receipt-table-cost">$0.00</span>
+                    </div>
+                    <div class="receipt-line">
+                        <span>Plant x <span id="receipt-plant-count">0</span></span>
+                        <span id="receipt-plant-cost">$0.00</span>
+                    </div>
+                    <div class="receipt-line total-line">
+                        <span>Total</span>
+                        <span id="receipt-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="buy-button"></button>
+    </div>
+
     <script>
         // Game State
         let totalMoney = 0;
+        let currentDay = 1;
         let currentRound = 0;
         let correctnessValue = 0;
         let currentOrder = {};
         let currentPhase = 'ordering'; // ordering, protein, vegetable, sauce
         let selectedIngredient = null;
+
+        // Upgrade State
+        let tablesOwned = 0;
+        let plantsOwned = 0;
+        const MAX_TABLES = 2;
+        const MAX_PLANTS = 2;
+        const TABLE_COST = 50;
+        const PLANT_COST = 25;
+        const TABLE_BONUS = 10;
+        const PLANT_MULTIPLIER = 0.05; // 5% per plant
+        const GOAL_MONEY = 1000;
+        const TOTAL_DAYS = 7;
 
         // Game Data
         const proteins = ['beef', 'pork', 'chicken'];
