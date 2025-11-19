@@ -100,12 +100,25 @@
             animation: slideUpFromBottom 0.67s forwards;
         }
 
+        #input-container.slide-down {
+            animation: slideDownOffScreen 0.67s forwards;
+        }
+
         @keyframes slideUpFromBottom {
             from {
                 bottom: -550px;
             }
             to {
                 bottom: 0px;
+            }
+        }
+
+        @keyframes slideDownOffScreen {
+            from {
+                bottom: 0px;
+            }
+            to {
+                bottom: -550px;
             }
         }
 
@@ -142,15 +155,15 @@
         }
 
         #submit-button {
-            width: 200px;
-            height: 80px;
+            width: 280px;
+            height: 120px;
             background-image: url('assets/submit.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             border: none;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 50px;
             transition: transform 0.2s;
             background-color: transparent;
         }
@@ -512,21 +525,39 @@
 
         function updateWritingHandPosition() {
             const inputRect = orderInput.getBoundingClientRect();
-            const containerRect = inputContainer.getBoundingClientRect();
+            const text = orderInput.value;
 
-            // Position the writing hand centered on the input area
-            // The pencil tip in the 500x500 image is approximately at:
-            // x: 100px from left edge
-            // y: 420px from top edge
+            // Get text metrics to calculate caret position
+            const lines = text.split('\n');
+            const currentLineIndex = text.substring(0, orderInput.selectionStart).split('\n').length - 1;
+            const currentLine = lines.slice(0, currentLineIndex + 1).join('\n');
+            const textUpToCaret = currentLine.substring(currentLine.lastIndexOf('\n') + 1);
 
-            // Center the writing hand on the textarea
-            const centerX = containerRect.left + (containerRect.width / 2);
-            const centerY = inputRect.top + (inputRect.height / 2);
+            // Calculate text width up to caret
+            const textWidth = getTextWidth(textUpToCaret, orderInput);
 
-            // Adjust so pencil tip aligns with approximately where typing occurs
-            // The pencil tip is at (100, 420) in the 500x500 image
-            writingHand.style.left = (centerX - 100) + 'px';
-            writingHand.style.top = (centerY - 420) + 'px';
+            // Calculate caret position
+            const style = window.getComputedStyle(orderInput);
+            const paddingLeft = parseInt(style.paddingLeft);
+            const paddingTop = parseInt(style.paddingTop);
+            const lineHeight = parseInt(style.fontSize) * 1.2; // Approximate line height
+
+            // Position of caret within textarea
+            const caretX = inputRect.left + paddingLeft + textWidth;
+            const caretY = inputRect.top + paddingTop + (currentLineIndex * lineHeight);
+
+            // The pencil tip in the 500x500 image is at approximately (100, 420)
+            // Position the hand so pencil tip aligns with caret
+            writingHand.style.left = (caretX - 100) + 'px';
+            writingHand.style.top = (caretY - 420) + 'px';
+        }
+
+        function getTextWidth(text, element) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const style = window.getComputedStyle(element);
+            context.font = style.font;
+            return context.measureText(text).width;
         }
 
         submitButton.addEventListener('click', checkOrder);
@@ -543,8 +574,17 @@
             const correctOrder = `${currentOrder.protein} ${currentOrder.vegetable} ${currentOrder.sauce} taco`;
 
             if (userInput === correctOrder) {
-                inputContainer.style.display = 'none';
-                startIngredientPhase('protein');
+                // Trigger slide-down animation
+                inputContainer.classList.remove('slide-up');
+                inputContainer.classList.add('slide-down');
+                writingHand.style.display = 'none';
+
+                // Wait for animation to complete before starting ingredient phase
+                setTimeout(() => {
+                    inputContainer.style.display = 'none';
+                    inputContainer.classList.remove('slide-down');
+                    startIngredientPhase('protein');
+                }, 670); // Match animation duration
             } else {
                 // Show order again
                 orderInput.value = '';
