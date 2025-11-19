@@ -305,6 +305,21 @@
             z-index: 11;
         }
 
+        #takeout {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 250px;
+            background-image: url('assets/takeout.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: none;
+            z-index: 12;
+        }
+
         #final-message {
             position: absolute;
             top: 50%;
@@ -448,6 +463,7 @@
 
         <div id="ingredients-container"></div>
         <div id="tortilla"></div>
+        <div id="takeout"></div>
         <div id="final-message"></div>
     </div>
 
@@ -494,6 +510,7 @@
         const writingHand = document.getElementById('writing-hand');
         const ingredientsContainer = document.getElementById('ingredients-container');
         const tortilla = document.getElementById('tortilla');
+        const takeout = document.getElementById('takeout');
         const moneyCounter = document.getElementById('money-counter');
         const roundText = document.getElementById('round-text');
         const finalMessage = document.getElementById('final-message');
@@ -830,31 +847,39 @@
                 moneyEarned = 0; // $0
             }
 
-            totalMoney += moneyEarned;
-            updateMoneyDisplay();
+            // Replace taco with takeout image
+            tortilla.style.display = 'none';
+            document.querySelectorAll('.placed-ingredient').forEach(el => {
+                el.style.display = 'none';
+            });
+            takeout.style.display = 'block';
 
-            // Show money toast above cat
-            showMoneyToast(moneyEarned);
-
-            // Animate cat and taco leaving
+            // Small delay before showing payment
             setTimeout(() => {
-                catSprite.classList.add('slide-out-left');
-                tortilla.classList.add('slide-out-left');
-                document.querySelectorAll('.placed-ingredient').forEach(el => {
-                    el.classList.add('slide-out-left');
-                });
+                totalMoney += moneyEarned;
+                updateMoneyDisplay();
 
+                // Show money toast above cat
+                showMoneyToast(moneyEarned);
+
+                // Animate cat and takeout leaving
                 setTimeout(() => {
-                    catSprite.classList.remove('slide-out-left');
-                    tortilla.classList.remove('slide-out-left');
+                    catSprite.classList.add('slide-out-left');
+                    takeout.classList.add('slide-out-left');
 
-                    if (currentRound < 3) {
-                        startNewRound();
-                    } else {
-                        showFinalResult();
-                    }
-                }, 1000);
-            }, 1500);
+                    setTimeout(() => {
+                        catSprite.classList.remove('slide-out-left');
+                        takeout.classList.remove('slide-out-left');
+                        takeout.style.display = 'none';
+
+                        if (currentRound < 3) {
+                            startNewRound();
+                        } else {
+                            showFinalResult();
+                        }
+                    }, 1000);
+                }, 1500);
+            }, 300);
         }
 
         function updateMoneyDisplay() {
