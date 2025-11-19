@@ -631,21 +631,23 @@
             const correctOrder = `${currentOrder.protein} ${currentOrder.vegetable} ${currentOrder.sauce} taco`;
 
             if (userInput === correctOrder) {
-                // Trigger slide-down animation
+                // Trigger slide-down animation for notepad
                 inputContainer.classList.remove('slide-up');
                 inputContainer.classList.add('slide-down');
 
-                // Reset writing hand to use bottom-based positioning for animation
+                // Get current computed position of writing hand
+                const currentTop = writingHand.getBoundingClientRect().top;
+
+                // Set absolute pixel position to maintain current location
+                writingHand.style.top = currentTop + 'px';
                 writingHand.style.removeProperty('left');
-                writingHand.style.removeProperty('top');
-                writingHand.style.bottom = '0px';
 
-                // Force reflow before adding animation class
-                void writingHand.offsetHeight;
+                // Add transition for smooth animation
+                writingHand.style.transition = 'top 0.67s ease';
 
-                // Add slide-down animation after a small delay to ensure positioning takes effect
+                // Animate to off-screen after a brief delay
                 setTimeout(() => {
-                    writingHand.classList.add('slide-down');
+                    writingHand.style.top = '100vh';
                 }, 10);
 
                 // Wait for animation to complete before starting ingredient phase
@@ -653,7 +655,7 @@
                     inputContainer.style.display = 'none';
                     inputContainer.classList.remove('slide-down');
                     writingHand.style.display = 'none';
-                    writingHand.classList.remove('slide-down');
+                    writingHand.style.transition = '';
                     startIngredientPhase('protein');
                 }, 670); // Match animation duration
             } else {
