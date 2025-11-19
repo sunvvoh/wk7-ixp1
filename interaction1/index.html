@@ -1454,7 +1454,10 @@
             // After fade out, show After Hours screen
             setTimeout(() => {
                 businessElements.forEach(el => {
-                    if (el) el.style.display = 'none';
+                    if (el) {
+                        el.style.display = 'none';
+                        el.classList.remove('fade-out');
+                    }
                 });
 
                 showAfterHoursScreen();
@@ -1596,6 +1599,8 @@
                             el.style.display = 'flex';
                         } else if (el.classList.contains('business-plant') || el.classList.contains('business-table')) {
                             // Display is already set by updateBusinessHourDisplay
+                        } else if (el.id === 'money-counter') {
+                            el.style.display = 'flex';
                         } else {
                             el.style.display = 'block';
                         }
@@ -1608,9 +1613,10 @@
                     businessElements.forEach(el => {
                         if (el) {
                             el.style.opacity = '1';
-                            // Remove inline opacity style after transition completes
+                            // Remove inline styles after transition completes
                             setTimeout(() => {
                                 el.style.removeProperty('opacity');
+                                el.style.removeProperty('display');
                             }, 1000);
                         }
                     });
