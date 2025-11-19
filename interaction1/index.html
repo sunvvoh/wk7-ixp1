@@ -548,8 +548,8 @@
             const caretY = inputRect.top + paddingTop + (currentLineIndex * lineHeight);
 
             // The pencil tip is now at the top-left corner of the image
-            // Position the hand so pencil tip aligns with caret (offset up by 100px)
-            writingHand.style.left = caretX + 'px';
+            // Position the hand so pencil tip aligns with caret (offset left by 50px, up by 100px)
+            writingHand.style.left = (caretX - 50) + 'px';
             writingHand.style.top = (caretY - 100) + 'px';
         }
 
