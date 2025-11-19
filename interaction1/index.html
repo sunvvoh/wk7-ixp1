@@ -155,8 +155,8 @@
         }
 
         #submit-button {
-            width: 280px;
-            height: 120px;
+            width: 350px;
+            height: 150px;
             background-image: url('assets/submit.png');
             background-size: contain;
             background-repeat: no-repeat;
@@ -548,8 +548,8 @@
             const caretY = inputRect.top + paddingTop + (currentLineIndex * lineHeight);
 
             // The pencil tip is now at the top-left corner of the image
-            // Position the hand so pencil tip aligns with caret
-            writingHand.style.left = caretX + 'px';
+            // Position the hand so pencil tip aligns with caret (offset by 100px)
+            writingHand.style.left = (caretX + 100) + 'px';
             writingHand.style.top = caretY + 'px';
         }
 
