@@ -550,7 +550,9 @@
             // After animation completes, switch to caret tracking mode
             setTimeout(() => {
                 writingHand.classList.remove('slide-up');
-                writingHand.style.bottom = 'auto'; // Switch from bottom to top/left positioning
+                // Don't set bottom to 'auto' - leave it at 0px from animation
+                // This allows top/left to position it for caret tracking
+                // but bottom stays at 0px for the slide-down animation
                 updateWritingHandPosition();
                 orderInput.focus();
             }, 700); // Show after slide-up animation completes
